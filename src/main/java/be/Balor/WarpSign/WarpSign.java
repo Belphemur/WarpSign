@@ -16,7 +16,10 @@
  ************************************************************************/
 package be.Balor.WarpSign;
 
+import org.bukkit.plugin.PluginDescriptionFile;
+
 import be.Balor.Manager.Permissions.PermParent;
+import be.Balor.Tools.Debug.ACLogger;
 import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 
 /**
@@ -28,7 +31,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	/**
 	 * @param name
 	 */
-	public WarpSign(String name) {
+	public WarpSign() {
 		super("WarpSign");
 	}
 
@@ -38,6 +41,9 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	 * @see org.bukkit.plugin.Plugin#onDisable()
 	 */
 	public void onDisable() {
+		final PluginDescriptionFile pdfFile = this.getDescription();
+		ACLogger.info("[" + pdfFile.getName() + "]" + " Plugin Enabled. (version "
+				+ pdfFile.getVersion() + ")");
 
 	}
 
@@ -76,5 +82,8 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	@Override
 	public void onEnable() {
 		super.onEnable();
+		final PluginDescriptionFile pdfFile = this.getDescription();
+		ACLogger.info("[" + pdfFile.getName() + "]" + " Plugin Disabled.");
+		permissionLinker.registerAllPermParent();
 	}
 }
