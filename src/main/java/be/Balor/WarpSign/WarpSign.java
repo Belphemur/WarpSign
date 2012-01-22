@@ -28,13 +28,6 @@ import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
  */
 public class WarpSign extends AbstractAdminCmdPlugin {
 
-	/**
-	 * @param name
-	 */
-	public WarpSign() {
-		super("WarpSign");
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -83,7 +76,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	public void onEnable() {
 		super.onEnable();
 		final PluginDescriptionFile pdfFile = this.getDescription();
-		ACLogger.info("[" + pdfFile.getName() + "]" + " Plugin Disabled.");
+		ACLogger.info("[" + pdfFile.getName() + "]" + " Plugin Enabled.");
 		permissionLinker.registerAllPermParent();
 	}
 }
