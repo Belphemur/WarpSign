@@ -1,7 +1,7 @@
 name: WarpSign
-main: be.Balor.bukkit.AdminCmd.AdminCmd
+main: be.Balor.WarpSign.WarpSign
 version: ${project.version} (BUILD ${git.build.time})
-authors: [Balor]
+author: Balor
 depend: [AdminCmd]
 description: >
              This plugin is a addon to AdminCmd to add Warping Signs.
