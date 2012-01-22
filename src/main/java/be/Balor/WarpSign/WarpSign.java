@@ -16,13 +16,16 @@
  ************************************************************************/
 package be.Balor.WarpSign;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
 import be.Balor.Tools.Metrics;
+import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
 import be.Balor.Tools.Debug.ACPluginLogger;
+import be.Balor.WarpSign.Listeners.SignListener;
 import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 
 /**
@@ -31,6 +34,8 @@ import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
  */
 public class WarpSign extends AbstractAdminCmdPlugin {
 	public final static ACPluginLogger log = ACPluginLogger.getLogger("WarpSign");
+	private ExtendedConfiguration conf;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -60,6 +65,8 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	protected void registerPermParents() {
 		permissionLinker.addPermParent("admincmd.warpsign.*");
 		permissionLinker.setMajorPerm(new PermParent("admincmd.*"));
+		permissionLinker.addPermChild("admincmd.warpsign.edit");
+		permissionLinker.addPermChild("admincmd.warpsign.use");
 	}
 
 	/*
@@ -72,12 +79,31 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 
 	}
 
+	/**
+	 * @return the conf
+	 */
+	public ExtendedConfiguration getConf() {
+		return conf;
+	}
+
 	@Override
 	public void onEnable() {
 		super.onEnable();
 		final PluginDescriptionFile pdfFile = this.getDescription();
-		logger.info("Plugin Enabled. (version "
-				+ pdfFile.getVersion() + ")");
+		logger.info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
+		conf = ExtendedConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+		conf.addDefault("warpKeyWord", "[ACWarp]");
+		conf.options().header(
+				"This is the configuration file of WarpSign\n"
+						+ " warpKeyWord : set the keyword used to recognise a WarpSign.\n "
+						+ "BE CAREFULL if you change it, older WarpSign will be not working.");
+		conf.options().copyDefaults(true);
+		try {
+			conf.save();
+		} catch (IOException e1) {
+			logger.severe("Configuration saving problem", e1);
+		}
+		getServer().getPluginManager().registerEvents(new SignListener(this), this);
 		permissionLinker.registerAllPermParent();
 		Metrics metrics;
 		try {
@@ -85,6 +111,6 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			metrics.beginMeasuringPlugin(this);
 		} catch (IOException e) {
 		}
-		
+
 	}
 }
