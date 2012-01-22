@@ -16,10 +16,13 @@
  ************************************************************************/
 package be.Balor.WarpSign;
 
+import java.io.IOException;
+
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
-import be.Balor.Tools.Debug.ACLogger;
+import be.Balor.Tools.Metrics;
+import be.Balor.Tools.Debug.ACPluginLogger;
 import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 
 /**
@@ -27,17 +30,14 @@ import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
  * 
  */
 public class WarpSign extends AbstractAdminCmdPlugin {
-
+	public final static ACPluginLogger log = ACPluginLogger.getLogger("WarpSign");
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.bukkit.plugin.Plugin#onDisable()
 	 */
 	public void onDisable() {
-		final PluginDescriptionFile pdfFile = this.getDescription();
-		ACLogger.info("[" + pdfFile.getName() + "]" + " Plugin Enabled. (version "
-				+ pdfFile.getVersion() + ")");
-
+		logger.info("Plugin Disabled.");
 	}
 
 	/*
@@ -76,7 +76,15 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	public void onEnable() {
 		super.onEnable();
 		final PluginDescriptionFile pdfFile = this.getDescription();
-		ACLogger.info("[" + pdfFile.getName() + "]" + " Plugin Enabled.");
+		logger.info("Plugin Enabled. (version "
+				+ pdfFile.getVersion() + ")");
 		permissionLinker.registerAllPermParent();
+		Metrics metrics;
+		try {
+			metrics = new Metrics();
+			metrics.beginMeasuringPlugin(this);
+		} catch (IOException e) {
+		}
+		
 	}
 }
