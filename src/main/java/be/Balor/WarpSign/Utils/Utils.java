@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with WarpSign.  If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************/
-package be.Balor.WarpSign;
+package be.Balor.WarpSign.Utils;
 
 import java.util.Collection;
 

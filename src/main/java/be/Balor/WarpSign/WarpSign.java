@@ -25,6 +25,7 @@ import be.Balor.Manager.Permissions.PermParent;
 import be.Balor.Tools.Metrics;
 import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
 import be.Balor.Tools.Debug.ACPluginLogger;
+import be.Balor.WarpSign.Listeners.SignCountListener;
 import be.Balor.WarpSign.Listeners.SignListener;
 import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 
@@ -78,13 +79,13 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 
 	}
 
-
 	@Override
 	public void onEnable() {
 		super.onEnable();
 		final PluginDescriptionFile pdfFile = this.getDescription();
 		logger.info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
-		ExtendedConfiguration conf = ExtendedConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+		ExtendedConfiguration conf = ExtendedConfiguration.loadConfiguration(new File(
+				getDataFolder(), "config.yml"));
 		conf.addDefaults(ConfigEnum.getDefaultvalues());
 		conf.options().header(
 				"This is the configuration file of WarpSign\n" + ConfigEnum.getHeader());
@@ -95,7 +96,12 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			logger.severe("Configuration saving problem", e1);
 		}
 		ConfigEnum.setConfig(conf);
-		getServer().getPluginManager().registerEvents(new SignListener(), this);
+		if (ConfigEnum.COUNT.getBoolean())
+			getServer().getPluginManager().registerEvents(
+					new SignCountListener(ExtendedConfiguration.loadConfiguration(new File(
+							getDataFolder(), "counts.yml"))), this);
+		else
+			getServer().getPluginManager().registerEvents(new SignListener(), this);
 		permissionLinker.registerAllPermParent();
 		Metrics metrics;
 		try {

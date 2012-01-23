@@ -48,9 +48,15 @@ public enum ConfigEnum {
 	WARPC(
 			"warpColor", "&" + ChatColor.GREEN.getChar(),
 			"This color will be use for colouring the Warp's name on the sign."), 
+	COUNT(
+			"useCount", true, 
+			"When set to true, the last line of the sign is used to count the number of teleportation done using the sign."),
+	COUNT_MSG(
+			"countMessage", "&" + ChatColor.RED.getChar()+"Count: &"+ChatColor.LIGHT_PURPLE.getChar(),
+			"When Count is set to true, this message will be used to display the teleport count."),
 	TP_MSG(
 			"teleportMessage", "&" + ChatColor.GREEN.getChar()
-					+ "Teleported successfully to " + '&' + ChatColor.WHITE.getChar(),
+					+ "Teleported successfully to &" + ChatColor.WHITE.getChar(),
 			"Teleport message used when successfully teleported to the Warp Point.");
 
 	private final String confVal;

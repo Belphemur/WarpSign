@@ -34,7 +34,8 @@ import be.Balor.Manager.Permissions.PermissionManager;
 import be.Balor.Player.ACPlayer;
 import be.Balor.Tools.Warp;
 import be.Balor.WarpSign.ConfigEnum;
-import be.Balor.WarpSign.Utils;
+import be.Balor.WarpSign.Utils.Utils;
+import be.Balor.WarpSign.Utils.WarpSignContainer;
 import be.Balor.World.ACWorld;
 import static be.Balor.Tools.Utils.colorParser;
 
@@ -98,35 +99,36 @@ public class SignListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerInteract(PlayerInteractEvent event) {
+	public WarpSignContainer onPlayerInteract(PlayerInteractEvent event) {
 		if (event.isCancelled())
-			return;
+			return null;
 		if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-			return;
+			return null;
 		Block block = event.getClickedBlock();
 		if (!(block.getState() instanceof Sign))
-			return;
+			return null;
 		Sign sign = (Sign) block.getState();
 		if (sign.getLine(0).indexOf(ConfigEnum.KEYWORD.getString()) != 0)
-			return;
+			return null;
 		if (!PermissionManager.hasPerm(event.getPlayer(), "admincmd.warpsign.use"))
-			return;
+			return null;
 		ACWorld world;
 		Player p = event.getPlayer();
 		try {
 			world = ACWorld.getWorld(ChatColor.stripColor(sign.getLine(1)));
 		} catch (WorldNotLoaded e) {
 			p.sendMessage(ConfigEnum.WORLDNF.getString() + sign.getLine(1));
-			return;
+			return null;
 		}
 		Warp warpPoint = world.getWarp(ChatColor.stripColor(sign.getLine(2)));
 		if (warpPoint == null) {
 			p.sendMessage(ConfigEnum.WARPNF.getString() + sign.getLine(2));
-			return;
+			return null;
 		}
 		ACPlayer.getPlayer(p).setLastLocation(p.getLocation());
 		p.teleport(warpPoint.loc);
 		p.sendMessage(colorParser(ConfigEnum.TP_MSG.getString()) + warpPoint.name);
+		return new WarpSignContainer(warpPoint.name, world.getName(), sign);
 
 	}
 }
