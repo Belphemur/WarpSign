@@ -33,7 +33,7 @@ public enum ConfigEnum {
 			"worldNotFound", "This World doesn't exists : ",
 			"Message used when using the autoComplete feature and the World couldn't be found."), 
 	WARPNF(
-			"worldNotFound", "This Warp doesn't exists : ",
+			"warpNotFound", "This Warp doesn't exists : ",
 			"Message used when using the autoComplete feature and the Warp couldn't be found.");
 
 	private final String confVal;
