@@ -18,6 +18,10 @@ package be.Balor.WarpSign.Listeners;
 
 import java.io.IOException;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 
@@ -50,6 +54,7 @@ public class SignCountListener extends SignListener {
 	 * event.player.PlayerInteractEvent)
 	 */
 	@Override
+	@EventHandler
 	public WarpSignContainer onPlayerInteract(PlayerInteractEvent event) {
 		WarpSignContainer warp = super.onPlayerInteract(event);
 		if (warp == null)
@@ -59,12 +64,28 @@ public class SignCountListener extends SignListener {
 		warp.sign.setLine(3, colorParser(ConfigEnum.COUNT_MSG.getString()) + count);
 		return warp;
 	}
-
+	@EventHandler
 	public void onSave(WorldSaveEvent event) {
 		try {
 			counts.save();
 		} catch (IOException e) {
 			WarpSign.log.severe("Problem when saving the TP count", e);
 		}
+	}
+	/* (non-Javadoc)
+	 * @see be.Balor.WarpSign.Listeners.SignListener#onBlockBreak(org.bukkit.event.block.BlockBreakEvent)
+	 */
+	@Override
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		super.onBlockBreak(event);
+	}
+	/* (non-Javadoc)
+	 * @see be.Balor.WarpSign.Listeners.SignListener#onSignChange(org.bukkit.event.block.SignChangeEvent)
+	 */
+	@Override
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onSignChange(SignChangeEvent event) {
+		super.onSignChange(event);
 	}
 }
