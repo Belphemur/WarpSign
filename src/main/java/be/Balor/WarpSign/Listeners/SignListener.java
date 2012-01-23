@@ -17,16 +17,21 @@
 package be.Balor.WarpSign.Listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import be.Balor.Manager.Exceptions.WorldNotLoaded;
 import be.Balor.Manager.Permissions.PermissionManager;
+import be.Balor.Player.ACPlayer;
 import be.Balor.Tools.Warp;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.Utils;
@@ -47,8 +52,7 @@ public class SignListener implements Listener {
 		Player p = event.getPlayer();
 		if (line0.indexOf(ConfigEnum.KEYWORD.getString()) != 0)
 			return;
-		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit"))
-		{
+		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit")) {
 			event.setCancelled(true);
 			return;
 		}
@@ -97,5 +101,32 @@ public class SignListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.isCancelled())
 			return;
+		if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+			return;
+		Block block = event.getClickedBlock();
+		if (!(block.getState() instanceof Sign))
+			return;
+		Sign sign = (Sign) block.getState();
+		if (sign.getLine(0).indexOf(ConfigEnum.KEYWORD.getString()) != 0)
+			return;
+		if (!PermissionManager.hasPerm(event.getPlayer(), "admincmd.warpsign.use"))
+			return;
+		ACWorld world;
+		Player p = event.getPlayer();
+		try {
+			world = ACWorld.getWorld(ChatColor.stripColor(sign.getLine(1)));
+		} catch (WorldNotLoaded e) {
+			p.sendMessage(ConfigEnum.WORLDNF.getString() + sign.getLine(1));
+			return;
+		}
+		Warp warpPoint = world.getWarp(ChatColor.stripColor(sign.getLine(2)));
+		if (warpPoint == null) {
+			p.sendMessage(ConfigEnum.WARPNF.getString() + sign.getLine(2));
+			return;
+		}
+		ACPlayer.getPlayer(p).setLastLocation(p.getLocation());
+		p.teleport(warpPoint.loc);
+		p.sendMessage(colorParser(ConfigEnum.TP_MSG.getString()) + warpPoint.name);
+
 	}
 }

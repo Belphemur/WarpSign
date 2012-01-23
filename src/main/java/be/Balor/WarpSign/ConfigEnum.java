@@ -42,11 +42,13 @@ public enum ConfigEnum {
 			"useColor", true,
 			"When set to true, will automatically color the World and Warp name on the sign using the color defined below."),
 	WORDC(
-			"wordColor", "&" + ChatColor.GOLD.getChar(),
+			"wordColor", '&' + ChatColor.GOLD.getChar(),
 			"This color will be use for colouring the Word's name on the sign."), 
 	WARPC(
-			"warpColor", "&" + ChatColor.GREEN.getChar(),
-			"This color will be use for colouring the Warp's name on the sign.");
+			"warpColor", '&' + ChatColor.GREEN.getChar(),
+			"This color will be use for colouring the Warp's name on the sign."),
+	TP_MSG("teleportMessage",'&' + ChatColor.GREEN.getChar() + "Teleported successfully to " + '&' + ChatColor.WHITE.getChar(),
+			"Teleport message used when successfully teleported to the Warp Point.");
 
 	private final String confVal;
 	private final Object defaultVal;

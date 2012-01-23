@@ -19,7 +19,6 @@ package be.Balor.WarpSign;
 import java.io.File;
 import java.io.IOException;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
