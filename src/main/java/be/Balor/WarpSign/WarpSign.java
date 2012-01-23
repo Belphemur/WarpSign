@@ -19,6 +19,7 @@ package be.Balor.WarpSign;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
@@ -34,7 +35,6 @@ import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
  */
 public class WarpSign extends AbstractAdminCmdPlugin {
 	public final static ACPluginLogger log = ACPluginLogger.getLogger("WarpSign");
-	private ExtendedConfiguration conf;
 
 	/*
 	 * (non-Javadoc)
@@ -85,7 +85,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		super.onEnable();
 		final PluginDescriptionFile pdfFile = this.getDescription();
 		logger.info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
-		conf = ExtendedConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+		ExtendedConfiguration conf = ExtendedConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
 		conf.addDefaults(ConfigEnum.getDefaultvalues());
 		conf.options().header(
 				"This is the configuration file of WarpSign\n" + ConfigEnum.getHeader());
