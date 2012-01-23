@@ -20,7 +20,7 @@
  */
 package be.Balor.WarpSign;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
@@ -73,7 +73,7 @@ public enum ConfigEnum {
 	 * @return the defaultvalues
 	 */
 	public static Map<String, Object> getDefaultvalues() {
-		Map<String, Object> values = new HashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		for (ConfigEnum ce : values())
 			values.put(ce.confVal, ce.defaultVal);
 		return values;
