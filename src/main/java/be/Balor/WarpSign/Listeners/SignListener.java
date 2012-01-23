@@ -26,6 +26,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import be.Balor.Manager.Permissions.PermissionManager;
+import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.WarpSign;
 
 /**
@@ -50,7 +51,7 @@ public class SignListener implements Listener {
 			return;
 		String line0 = event.getLine(0);
 		Player p = event.getPlayer();
-		if (line0.indexOf(plugin.getConf().getString("warpKeyWord")) != 0)
+		if (line0.indexOf(plugin.getConfString(ConfigEnum.KEYWORD)) != 0)
 			return;
 		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit"))
 			event.setCancelled(true);
@@ -66,7 +67,7 @@ public class SignListener implements Listener {
 		Sign sign = (Sign) event.getBlock().getState();
 		Player p = event.getPlayer();
 		String line0 = sign.getLine(0);
-		if (line0.indexOf(plugin.getConf().getString("warpKeyWord")) != 0)
+		if (line0.indexOf(plugin.getConfString(ConfigEnum.KEYWORD)) != 0)
 			return;
 		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit"))
 			event.setCancelled(true);

@@ -82,8 +82,16 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	/**
 	 * @return the conf
 	 */
-	public ExtendedConfiguration getConf() {
-		return conf;
+	public String getConfString(ConfigEnum val) {
+		return conf.getString(val.getConfVal());
+	}
+
+	public int getConfInt(ConfigEnum val) {
+		return conf.getInt(val.getConfVal());
+	}
+
+	public double getConfDouble(ConfigEnum val) {
+		return conf.getDouble(val.getConfVal());
 	}
 
 	@Override
@@ -92,11 +100,9 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		final PluginDescriptionFile pdfFile = this.getDescription();
 		logger.info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
 		conf = ExtendedConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
-		conf.addDefault("warpKeyWord", "[ACWarp]");
+		conf.addDefaults(ConfigEnum.getDefaultvalues());
 		conf.options().header(
-				"This is the configuration file of WarpSign\n"
-						+ " warpKeyWord : set the keyword used to recognise a WarpSign.\n "
-						+ "BE CAREFULL if you change it, older WarpSign will be not working.");
+				"This is the configuration file of WarpSign\n" + ConfigEnum.getHeader());
 		conf.options().copyDefaults(true);
 		try {
 			conf.save();
