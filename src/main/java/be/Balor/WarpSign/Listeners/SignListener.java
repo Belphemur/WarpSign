@@ -26,6 +26,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import be.Balor.Manager.Permissions.PermissionManager;
+import be.Balor.Tools.Warp;
 import be.Balor.Tools.Help.String.Str;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.Utils;
@@ -71,14 +72,12 @@ public class SignListener implements Listener {
 				world = found;
 			}
 			ACWorld acWorld = ACWorld.getWorld(world);
-			if (acWorld.getWarp(warp) == null) {
-				String found = Str.matchString(acWorld.getWarpList(), warp);
-				if (found == null) {
-					event.setLine(2, plugin.getConfString(ConfigEnum.WARPNF) + warp);
-					return;
-				}
-				event.setLine(2, found);
+			Warp warpPoint = acWorld.getWarp(warp);
+			if (warpPoint == null) {
+				event.setLine(2, plugin.getConfString(ConfigEnum.WARPNF) + warp);
+				return;
 			}
+			event.setLine(2, warpPoint.name);
 		}
 
 	}
