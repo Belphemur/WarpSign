@@ -23,6 +23,8 @@ package be.Balor.WarpSign;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
+
 public enum ConfigEnum {
 	KEYWORD("warpKeyWord", "[ACWarp]", "set the keyword used to recognise a WarpSign.\n "
 			+ "BE CAREFULL if you change it, older WarpSign will be not working."), 
@@ -34,7 +36,16 @@ public enum ConfigEnum {
 			"Message used when using the autoComplete feature and the World couldn't be found."), 
 	WARPNF(
 			"warpNotFound", "This Warp doesn't exists : ",
-			"Message used when using the autoComplete feature and the Warp couldn't be found.");
+			"Message used when using the autoComplete feature and the Warp couldn't be found."), 
+	COLOR(
+			"useColor", true,
+			"When set to true, will automatically color the World and Warp name on the sign using the color defined below."),
+	WORDC(
+			"wordColor", "&" + ChatColor.GOLD.getChar(),
+			"This color will be use for colouring the Word's name on the sign."), 
+	WARPC(
+			"warpColor", "&" + ChatColor.AQUA.getChar(),
+			"This color will be use for colouring the Warp's name on the sign.");
 
 	private final String confVal;
 	private final Object defaultVal;

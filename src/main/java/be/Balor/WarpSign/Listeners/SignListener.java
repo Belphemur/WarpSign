@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import be.Balor.Manager.Permissions.PermissionManager;
 import be.Balor.Tools.Warp;
-import be.Balor.Tools.Help.String.Str;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.Utils;
 import be.Balor.WarpSign.WarpSign;
@@ -78,6 +77,10 @@ public class SignListener implements Listener {
 				return;
 			}
 			event.setLine(2, warpPoint.name);
+		}
+		if (plugin.getConfBoolean(ConfigEnum.COLOR)) {
+			event.setLine(1, plugin.getConfString(ConfigEnum.WORDC) + event.getLine(1));
+			event.setLine(2, plugin.getConfString(ConfigEnum.WARPC) + event.getLine(2));
 		}
 
 	}
