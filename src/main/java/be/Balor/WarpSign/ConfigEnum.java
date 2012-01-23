@@ -82,8 +82,8 @@ public enum ConfigEnum {
 	public static String getHeader() {
 		StringBuffer buffer = new StringBuffer();
 		for (ConfigEnum ce : values())
-			buffer.append(ce.confVal).append(" : ").append(ce.description).append(" (Default : ")
-					.append(ce.defaultVal).append(')').append(System.getProperty("line.separator"));
+			buffer.append(ce.confVal).append("\t:\t").append(ce.description).append(" (Default : ")
+					.append(ce.defaultVal).append(')').append('\n');
 		return buffer.toString();
 	}
 }
