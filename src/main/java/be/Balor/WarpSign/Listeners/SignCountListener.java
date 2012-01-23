@@ -29,6 +29,7 @@ import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.WarpSign;
 import be.Balor.WarpSign.Utils.WarpSignContainer;
+import be.Balor.bukkit.AdminCmd.ACPluginManager;
 import static be.Balor.Tools.Utils.colorParser;
 
 /**
@@ -56,14 +57,21 @@ public class SignCountListener extends SignListener {
 	@Override
 	@EventHandler
 	public WarpSignContainer onPlayerInteract(PlayerInteractEvent event) {
-		WarpSignContainer warp = super.onPlayerInteract(event);
+		final WarpSignContainer warp = super.onPlayerInteract(event);
 		if (warp == null)
 			return null;
 		int count = counts.getInt(warp.toString(), 0);
 		counts.set(warp.toString(), ++count);
 		warp.sign.setLine(3, colorParser(ConfigEnum.COUNT_MSG.getString()) + count);
+		ACPluginManager.scheduleSyncTask(new Runnable() {
+
+			public void run() {
+				warp.sign.update();
+			}
+		});
 		return warp;
 	}
+
 	@EventHandler
 	public void onSave(WorldSaveEvent event) {
 		try {
@@ -72,16 +80,26 @@ public class SignCountListener extends SignListener {
 			WarpSign.log.severe("Problem when saving the TP count", e);
 		}
 	}
-	/* (non-Javadoc)
-	 * @see be.Balor.WarpSign.Listeners.SignListener#onBlockBreak(org.bukkit.event.block.BlockBreakEvent)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * be.Balor.WarpSign.Listeners.SignListener#onBlockBreak(org.bukkit.event
+	 * .block.BlockBreakEvent)
 	 */
 	@Override
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		super.onBlockBreak(event);
 	}
-	/* (non-Javadoc)
-	 * @see be.Balor.WarpSign.Listeners.SignListener#onSignChange(org.bukkit.event.block.SignChangeEvent)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * be.Balor.WarpSign.Listeners.SignListener#onSignChange(org.bukkit.event
+	 * .block.SignChangeEvent)
 	 */
 	@Override
 	@EventHandler(priority = EventPriority.HIGH)
