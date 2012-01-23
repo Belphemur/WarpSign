@@ -39,15 +39,18 @@ public enum ConfigEnum {
 			"warpNotFound", "This Warp doesn't exists : ",
 			"Message used when using the autoComplete feature and the Warp couldn't be found."), 
 	COLOR(
-			"useColor", true,
-			"When set to true, will automatically color the World and Warp name on the sign using the color defined below."),
+			"useColor",
+			true,
+			"When set to true, will automatically color the World and Warp name on the sign using the color defined below."), 
 	WORDC(
-			"wordColor", '&' + ChatColor.GOLD.getChar(),
+			"wordColor", String.valueOf('&' + ChatColor.GOLD.getChar()),
 			"This color will be use for colouring the Word's name on the sign."), 
 	WARPC(
-			"warpColor", '&' + ChatColor.GREEN.getChar(),
-			"This color will be use for colouring the Warp's name on the sign."),
-	TP_MSG("teleportMessage",'&' + ChatColor.GREEN.getChar() + "Teleported successfully to " + '&' + ChatColor.WHITE.getChar(),
+			"warpColor", String.valueOf('&' + ChatColor.GREEN.getChar()),
+			"This color will be use for colouring the Warp's name on the sign."), 
+	TP_MSG(
+			"teleportMessage", String.valueOf('&' + ChatColor.GREEN.getChar())
+					+ "Teleported successfully to " + '&' + ChatColor.WHITE.getChar(),
 			"Teleport message used when successfully teleported to the Warp Point.");
 
 	private final String confVal;
@@ -77,7 +80,7 @@ public enum ConfigEnum {
 	public double getDouble() {
 		return config.getDouble(confVal);
 	}
-	
+
 	public boolean getBoolean() {
 		return config.getBoolean(confVal);
 	}
@@ -85,6 +88,7 @@ public enum ConfigEnum {
 	public long getLong() {
 		return config.getLong(confVal);
 	}
+
 	/**
 	 * @return the defaultvalues
 	 */
@@ -102,8 +106,10 @@ public enum ConfigEnum {
 					.append(ce.defaultVal).append(')').append('\n');
 		return buffer.toString();
 	}
+
 	/**
-	 * @param config the config to set
+	 * @param config
+	 *            the config to set
 	 */
 	public static void setConfig(ConfigurationSection config) {
 		ConfigEnum.config = config;
