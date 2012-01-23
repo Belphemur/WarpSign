@@ -28,7 +28,13 @@ public enum ConfigEnum {
 			+ "BE CAREFULL if you change it, older WarpSign will be not working."), 
 	AUTOCOMPLETE(
 			"autoComplete", true,
-			"when typing the name of a world of a warp, if set to true, will autocomplete the Sign.");
+			"when typing the name of a world of a warp, if set to true, will autocomplete the Sign."), 
+	WORLDNF(
+			"worldNotFound", "This World doesn't exists : ",
+			"Message used when using the autoComplete feature and the World couldn't be found."), 
+	WARPNF(
+			"worldNotFound", "This Warp doesn't exists : ",
+			"Message used when using the autoComplete feature and the Warp couldn't be found.");
 
 	private final String confVal;
 	private final Object defaultVal;
@@ -53,19 +59,12 @@ public enum ConfigEnum {
 	}
 
 	/**
-	 * @return the defaultVal
-	 */
-	public Object getDefaultVal() {
-		return defaultVal;
-	}
-
-	/**
 	 * @return the defaultvalues
 	 */
 	public static Map<String, Object> getDefaultvalues() {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (ConfigEnum ce : values())
-			values.put(ce.getConfVal(), ce.getDefaultVal());
+			values.put(ce.confVal, ce.defaultVal);
 		return values;
 	}
 

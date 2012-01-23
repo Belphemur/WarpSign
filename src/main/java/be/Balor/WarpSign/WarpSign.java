@@ -93,7 +93,9 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	public double getConfDouble(ConfigEnum val) {
 		return conf.getDouble(val.getConfVal());
 	}
-
+	public boolean getConfBoolean(ConfigEnum val) {
+		return conf.getBoolean(val.getConfVal());
+	}
 	@Override
 	public void onEnable() {
 		super.onEnable();

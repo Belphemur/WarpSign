@@ -26,8 +26,11 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import be.Balor.Manager.Permissions.PermissionManager;
+import be.Balor.Tools.Help.String.Str;
 import be.Balor.WarpSign.ConfigEnum;
+import be.Balor.WarpSign.Utils;
 import be.Balor.WarpSign.WarpSign;
+import be.Balor.World.ACWorld;
 
 /**
  * @author Balor (aka Antoine Aflalo)
@@ -55,6 +58,27 @@ public class SignListener implements Listener {
 			return;
 		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit"))
 			event.setCancelled(true);
+		if (plugin.getConfBoolean(ConfigEnum.AUTOCOMPLETE)) {
+			String world = event.getLine(1);
+			String warp = event.getLine(2);
+			if (plugin.getServer().getWorld(world) == null) {
+				String found = Utils.matchWorldName(plugin.getServer().getWorlds(), world);
+				if (found == null) {
+					event.setLine(1, plugin.getConfString(ConfigEnum.WORLDNF) + world);
+					return;
+				}
+				event.setLine(1, found);
+			}
+			ACWorld acWorld = ACWorld.getWorld(world);
+			if (acWorld.getWarp(warp) == null) {
+				String found = Str.matchString(acWorld.getWarpList(), warp);
+				if (found == null) {
+					event.setLine(2, plugin.getConfString(ConfigEnum.WARPNF) + warp);
+					return;
+				}
+				event.setLine(2, found);
+			}
+		}
 
 	}
 
