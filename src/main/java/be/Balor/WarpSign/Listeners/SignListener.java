@@ -16,6 +16,7 @@
  ************************************************************************/
 package be.Balor.WarpSign.Listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +30,6 @@ import be.Balor.Manager.Permissions.PermissionManager;
 import be.Balor.Tools.Warp;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.Utils;
-import be.Balor.WarpSign.WarpSign;
 import be.Balor.World.ACWorld;
 import static be.Balor.Tools.Utils.colorParser;
 
@@ -39,33 +39,26 @@ import static be.Balor.Tools.Utils.colorParser;
  */
 public class SignListener implements Listener {
 
-	private final WarpSign plugin;
-
-	/**
-	 * @param plugin
-	 */
-	public SignListener(WarpSign plugin) {
-		super();
-		this.plugin = plugin;
-	}
-
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onSignChange(SignChangeEvent event) {
 		if (event.isCancelled())
 			return;
 		String line0 = event.getLine(0);
 		Player p = event.getPlayer();
-		if (line0.indexOf(plugin.getConfString(ConfigEnum.KEYWORD)) != 0)
+		if (line0.indexOf(ConfigEnum.KEYWORD.getString()) != 0)
 			return;
 		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit"))
+		{
 			event.setCancelled(true);
-		if (plugin.getConfBoolean(ConfigEnum.AUTOCOMPLETE)) {
+			return;
+		}
+		if (ConfigEnum.AUTOCOMPLETE.getBoolean()) {
 			String world = event.getLine(1);
 			String warp = event.getLine(2);
-			if (plugin.getServer().getWorld(world) == null) {
-				String found = Utils.matchWorldName(plugin.getServer().getWorlds(), world);
+			if (Bukkit.getServer().getWorld(world) == null) {
+				String found = Utils.matchWorldName(Bukkit.getServer().getWorlds(), world);
 				if (found == null) {
-					event.setLine(1, plugin.getConfString(ConfigEnum.WORLDNF) + world);
+					event.setLine(1, ConfigEnum.WORLDNF.getString() + world);
 					return;
 				}
 				event.setLine(1, found);
@@ -74,14 +67,14 @@ public class SignListener implements Listener {
 			ACWorld acWorld = ACWorld.getWorld(world);
 			Warp warpPoint = acWorld.getWarp(warp);
 			if (warpPoint == null) {
-				event.setLine(2, plugin.getConfString(ConfigEnum.WARPNF) + warp);
+				event.setLine(2, ConfigEnum.WARPNF.getString() + warp);
 				return;
 			}
 			event.setLine(2, warpPoint.name);
 		}
-		if (plugin.getConfBoolean(ConfigEnum.COLOR)) {
-			event.setLine(1, colorParser(plugin.getConfString(ConfigEnum.WORDC)) + event.getLine(1));
-			event.setLine(2, colorParser(plugin.getConfString(ConfigEnum.WARPC)) + event.getLine(2));
+		if (ConfigEnum.COLOR.getBoolean()) {
+			event.setLine(1, colorParser(ConfigEnum.WORDC.getString()) + event.getLine(1));
+			event.setLine(2, colorParser(ConfigEnum.WARPC.getString()) + event.getLine(2));
 		}
 
 	}
@@ -93,11 +86,9 @@ public class SignListener implements Listener {
 		if (!(event.getBlock().getState() instanceof Sign))
 			return;
 		Sign sign = (Sign) event.getBlock().getState();
-		Player p = event.getPlayer();
-		String line0 = sign.getLine(0);
-		if (line0.indexOf(plugin.getConfString(ConfigEnum.KEYWORD)) != 0)
+		if (sign.getLine(0).indexOf(ConfigEnum.KEYWORD.getString()) != 0)
 			return;
-		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit"))
+		if (!PermissionManager.hasPerm(event.getPlayer(), "admincmd.warpsign.edit"))
 			event.setCancelled(true);
 
 	}

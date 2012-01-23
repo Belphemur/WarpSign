@@ -79,23 +79,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 
 	}
 
-	/**
-	 * @return the conf
-	 */
-	public String getConfString(ConfigEnum val) {
-		return conf.getString(val.getConfVal());
-	}
 
-	public int getConfInt(ConfigEnum val) {
-		return conf.getInt(val.getConfVal());
-	}
-
-	public double getConfDouble(ConfigEnum val) {
-		return conf.getDouble(val.getConfVal());
-	}
-	public boolean getConfBoolean(ConfigEnum val) {
-		return conf.getBoolean(val.getConfVal());
-	}
 	@Override
 	public void onEnable() {
 		super.onEnable();
@@ -111,7 +95,8 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		} catch (IOException e1) {
 			logger.severe("Configuration saving problem", e1);
 		}
-		getServer().getPluginManager().registerEvents(new SignListener(this), this);
+		ConfigEnum.setConfig(conf);
+		getServer().getPluginManager().registerEvents(new SignListener(), this);
 		permissionLinker.registerAllPermParent();
 		Metrics metrics;
 		try {

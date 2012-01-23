@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 
 public enum ConfigEnum {
 	KEYWORD("warpKeyWord", "[ACWarp]", "set the keyword used to recognise a WarpSign.\n "
@@ -50,6 +51,7 @@ public enum ConfigEnum {
 	private final String confVal;
 	private final Object defaultVal;
 	private final String description;
+	private static ConfigurationSection config;
 
 	/**
 	 * @param confVal
@@ -62,13 +64,25 @@ public enum ConfigEnum {
 		this.description = description;
 	}
 
-	/**
-	 * @return the confVal
-	 */
-	public String getConfVal() {
-		return confVal;
+	public String getString() {
+		return config.getString(confVal);
 	}
 
+	public int getInt() {
+		return config.getInt(confVal);
+	}
+
+	public double getDouble() {
+		return config.getDouble(confVal);
+	}
+	
+	public boolean getBoolean() {
+		return config.getBoolean(confVal);
+	}
+
+	public long getLong() {
+		return config.getLong(confVal);
+	}
 	/**
 	 * @return the defaultvalues
 	 */
@@ -85,5 +99,11 @@ public enum ConfigEnum {
 			buffer.append(ce.confVal).append("\t:\t").append(ce.description).append(" (Default : ")
 					.append(ce.defaultVal).append(')').append('\n');
 		return buffer.toString();
+	}
+	/**
+	 * @param config the config to set
+	 */
+	public static void setConfig(ConfigurationSection config) {
+		ConfigEnum.config = config;
 	}
 }
