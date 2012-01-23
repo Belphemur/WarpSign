@@ -31,6 +31,7 @@ import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.Utils;
 import be.Balor.WarpSign.WarpSign;
 import be.Balor.World.ACWorld;
+import static be.Balor.Tools.Utils.colorParser;
 
 /**
  * @author Balor (aka Antoine Aflalo)
@@ -79,8 +80,8 @@ public class SignListener implements Listener {
 			event.setLine(2, warpPoint.name);
 		}
 		if (plugin.getConfBoolean(ConfigEnum.COLOR)) {
-			event.setLine(1, plugin.getConfString(ConfigEnum.WORDC) + event.getLine(1));
-			event.setLine(2, plugin.getConfString(ConfigEnum.WARPC) + event.getLine(2));
+			event.setLine(1, colorParser(plugin.getConfString(ConfigEnum.WORDC)) + event.getLine(1));
+			event.setLine(2, colorParser(plugin.getConfString(ConfigEnum.WARPC)) + event.getLine(2));
 		}
 
 	}
