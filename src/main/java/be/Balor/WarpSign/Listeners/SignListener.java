@@ -68,6 +68,7 @@ public class SignListener implements Listener {
 					return;
 				}
 				event.setLine(1, found);
+				world = found;
 			}
 			ACWorld acWorld = ACWorld.getWorld(world);
 			if (acWorld.getWarp(warp) == null) {
