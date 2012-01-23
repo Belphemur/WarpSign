@@ -17,19 +17,21 @@
 package be.Balor.WarpSign.Listeners;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 
 import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
 import be.Balor.WarpSign.ConfigEnum;
-import be.Balor.WarpSign.WarpSign;
 import be.Balor.WarpSign.Utils.WarpSignContainer;
 import be.Balor.bukkit.AdminCmd.ACPluginManager;
+import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 import static be.Balor.Tools.Utils.colorParser;
 
 /**
@@ -38,13 +40,16 @@ import static be.Balor.Tools.Utils.colorParser;
  */
 public class SignCountListener extends SignListener {
 	private final ExtendedConfiguration counts;
+	private final AbstractAdminCmdPlugin plugin;
 
 	/**
 	 * @param counts
+	 * @param plugin
 	 */
-	public SignCountListener(ExtendedConfiguration counts) {
+	public SignCountListener(ExtendedConfiguration counts, AbstractAdminCmdPlugin plugin) {
 		super();
 		this.counts = counts;
+		this.plugin = plugin;
 	}
 
 	/*
@@ -74,11 +79,14 @@ public class SignCountListener extends SignListener {
 
 	@EventHandler
 	public void onSave(WorldSaveEvent event) {
-		try {
-			counts.save();
-		} catch (IOException e) {
-			WarpSign.log.severe("Problem when saving the TP count", e);
-		}
+		saveCounts();
+	}
+
+	@EventHandler
+	public void onDisable(PluginDisableEvent event) {
+		if (!event.getPlugin().equals(plugin))
+			return;
+		saveCounts();
 	}
 
 	/*
@@ -105,5 +113,13 @@ public class SignCountListener extends SignListener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onSignChange(SignChangeEvent event) {
 		super.onSignChange(event);
+	}
+
+	private void saveCounts() {
+		try {
+			counts.save();
+		} catch (IOException e) {
+			plugin.getLogger().log(Level.SEVERE, "Problem when saving the TP count", e);
+		}
 	}
 }

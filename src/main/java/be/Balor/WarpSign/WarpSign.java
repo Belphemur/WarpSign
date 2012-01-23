@@ -18,13 +18,13 @@ package be.Balor.WarpSign;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
 import be.Balor.Tools.Metrics;
 import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
-import be.Balor.Tools.Debug.ACPluginLogger;
 import be.Balor.WarpSign.Listeners.SignCountListener;
 import be.Balor.WarpSign.Listeners.SignListener;
 import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
@@ -34,7 +34,6 @@ import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
  * 
  */
 public class WarpSign extends AbstractAdminCmdPlugin {
-	public final static ACPluginLogger log = ACPluginLogger.getLogger("WarpSign");
 
 	/*
 	 * (non-Javadoc)
@@ -42,7 +41,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	 * @see org.bukkit.plugin.Plugin#onDisable()
 	 */
 	public void onDisable() {
-		logger.info("Plugin Disabled.");
+		getLogger().info("Plugin Disabled.");
 	}
 
 	/*
@@ -83,7 +82,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	public void onEnable() {
 		super.onEnable();
 		final PluginDescriptionFile pdfFile = this.getDescription();
-		logger.info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
+		getLogger().info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
 		ExtendedConfiguration conf = ExtendedConfiguration.loadConfiguration(new File(
 				getDataFolder(), "config.yml"));
 		conf.addDefaults(ConfigEnum.getDefaultvalues());
@@ -93,13 +92,13 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		try {
 			conf.save();
 		} catch (IOException e1) {
-			logger.severe("Configuration saving problem", e1);
+			getLogger().log(Level.SEVERE, "Configuration saving problem", e1);
 		}
 		ConfigEnum.setConfig(conf);
 		if (ConfigEnum.COUNT.getBoolean())
 			getServer().getPluginManager().registerEvents(
 					new SignCountListener(ExtendedConfiguration.loadConfiguration(new File(
-							getDataFolder(), "counts.yml"))), this);
+							getDataFolder(), "counts.yml")), this), this);
 		else
 			getServer().getPluginManager().registerEvents(new SignListener(), this);
 		permissionLinker.registerAllPermParent();
