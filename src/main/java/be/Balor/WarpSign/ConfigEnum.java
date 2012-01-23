@@ -44,7 +44,7 @@ public enum ConfigEnum {
 			"wordColor", "&" + ChatColor.GOLD.getChar(),
 			"This color will be use for colouring the Word's name on the sign."), 
 	WARPC(
-			"warpColor", "&" + ChatColor.AQUA.getChar(),
+			"warpColor", "&" + ChatColor.GREEN.getChar(),
 			"This color will be use for colouring the Warp's name on the sign.");
 
 	private final String confVal;
