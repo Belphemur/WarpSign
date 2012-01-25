@@ -110,6 +110,7 @@ public class SignListener implements Listener {
 		ACWorld acWorld;
 		try {
 			acWorld = ACWorld.getWorld(world);
+			event.setLine(1, acWorld.getName());
 		} catch (final WorldNotLoaded e) {
 			event.setLine(1, ConfigEnum.WORLDNF.getString() + world);
 			return;
