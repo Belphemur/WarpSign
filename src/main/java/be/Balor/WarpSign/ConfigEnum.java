@@ -25,13 +25,11 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 public enum ConfigEnum {
 	KEYWORD("warpKeyWord", "[ACWarp]", "set the keyword used to recognise a WarpSign.\n "
-			+ "BE CAREFULL if you change it, older WarpSign will be not working."), 
-	AUTOCOMPLETE(
-			"autoComplete", true,
-			"when typing the name of a world of a warp, if set to true, will autocomplete the Sign."), 
+			+ "BE CAREFULL if you change it, older WarpSign will be not working."),
 	WORLDNF(
 			"worldNotFound", "This World doesn't exists : ",
 			"Message used when using the autoComplete feature and the World couldn't be found."), 
@@ -49,20 +47,24 @@ public enum ConfigEnum {
 			"warpColor", "&" + ChatColor.GREEN.getChar(),
 			"This color will be use for colouring the Warp's name on the sign."), 
 	COUNT(
-			"useCount", true, 
-			"When set to true, the last line of the sign is used to count the number of teleportation done using the sign."),
+			"useCount",
+			true,
+			"When set to true, the last line of the sign is used to count the number of teleportation done using the sign."), 
 	COUNT_MSG(
-			"countMessage", "&" + ChatColor.RED.getChar()+"Count: &"+ChatColor.LIGHT_PURPLE.getChar(),
-			"When Count is set to true, this message will be used to display the teleport count."),
+			"countMessage", "&" + ChatColor.RED.getChar() + "Count: &"
+					+ ChatColor.LIGHT_PURPLE.getChar(),
+			"When Count is set to true, this message will be used to display the teleport count."), 
 	TP_MSG(
-			"teleportMessage", "&" + ChatColor.GREEN.getChar()
-					+ "Teleported successfully to &" + ChatColor.WHITE.getChar(),
+			"teleportMessage", "&" + ChatColor.GREEN.getChar() + "Teleported successfully to &"
+					+ ChatColor.WHITE.getChar(),
 			"Teleport message used when successfully teleported to the Warp Point.");
 
 	private final String confVal;
 	private final Object defaultVal;
 	private final String description;
 	private static ConfigurationSection config;
+	private static String pluginVersion;
+	private static String pluginName;
 
 	/**
 	 * @param confVal
@@ -107,6 +109,8 @@ public enum ConfigEnum {
 
 	public static String getHeader() {
 		StringBuffer buffer = new StringBuffer();
+		buffer.append("Configuration file of ").append(pluginName).append('\n');
+		buffer.append("Plugin Version: ").append(pluginVersion).append('\n').append('\n');
 		for (ConfigEnum ce : values())
 			buffer.append(ce.confVal).append("\t:\t").append(ce.description).append(" (Default : ")
 					.append(ce.defaultVal).append(')').append('\n');
@@ -119,5 +123,10 @@ public enum ConfigEnum {
 	 */
 	public static void setConfig(ConfigurationSection config) {
 		ConfigEnum.config = config;
+	}
+	public static void setPluginInfos(PluginDescriptionFile pdf)
+	{
+		ConfigEnum.pluginVersion = pdf.getVersion();
+		ConfigEnum.pluginName = pdf.getName();
 	}
 }
