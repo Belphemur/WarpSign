@@ -83,11 +83,11 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		super.onEnable();
 		final PluginDescriptionFile pdfFile = this.getDescription();
 		getLogger().info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
+		ConfigEnum.setPluginInfos(pdfFile);
 		ExtendedConfiguration conf = ExtendedConfiguration.loadConfiguration(new File(
 				getDataFolder(), "config.yml"));
 		conf.addDefaults(ConfigEnum.getDefaultvalues());
-		conf.options().header(
-				"This is the configuration file of WarpSign\n" + ConfigEnum.getHeader());
+		conf.options().header(ConfigEnum.getHeader());
 		conf.options().copyDefaults(true);
 		try {
 			conf.save();
