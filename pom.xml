@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>be.Balor</groupId>
   <artifactId>WarpSign</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <name>WarpSign</name>
   <description>WarpSign addon for AdminCmd</description>
 <scm>
@@ -200,7 +200,7 @@
 		<dependency>
 			<groupId>be.Balor</groupId>
 			<artifactId>AdminCmd</artifactId>
-			<version>5.11.2-SNAPSHOT</version>
+			<version>5.12.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

@@ -70,6 +70,7 @@ public class SignCountListener extends SignListener {
 		warp.sign.setLine(3, colorParser(ConfigEnum.COUNT_MSG.getString()) + count);
 		ACPluginManager.scheduleSyncTask(new Runnable() {
 
+			@Override
 			public void run() {
 				warp.sign.update();
 			}

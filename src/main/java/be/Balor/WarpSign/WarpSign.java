@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
-import be.Balor.Tools.Metrics;
 import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
 import be.Balor.WarpSign.Listeners.SignCountListener;
 import be.Balor.WarpSign.Listeners.SignListener;
@@ -40,6 +39,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	 * 
 	 * @see org.bukkit.plugin.Plugin#onDisable()
 	 */
+	@Override
 	public void onDisable() {
 		getLogger().info("Plugin Disabled.");
 	}
@@ -102,12 +102,6 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		else
 			getServer().getPluginManager().registerEvents(new SignListener(), this);
 		permissionLinker.registerAllPermParent();
-		Metrics metrics;
-		try {
-			metrics = new Metrics();
-			metrics.beginMeasuringPlugin(this);
-		} catch (IOException e) {
-		}
 
 	}
 }
