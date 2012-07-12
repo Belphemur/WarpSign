@@ -125,12 +125,14 @@ public class SignListener implements Listener {
 			try {
 				world = ACWorld.getWorld(container.worldName);
 			} catch (final WorldNotLoaded e) {
-				p.sendMessage(ConfigEnum.WORLDNF.getString() + sign.getLine(1));
+				p.sendMessage(ConfigEnum.WORLDNF.getString()
+						+ container.worldName);
 				return null;
 			}
 			warpPoint = world.getWarp(container.warpName);
 			if (warpPoint == null) {
-				p.sendMessage(ConfigEnum.WARPNF.getString() + sign.getLine(2));
+				p.sendMessage(ConfigEnum.WARPNF.getString()
+						+ container.warpName);
 				return null;
 			}
 		}
