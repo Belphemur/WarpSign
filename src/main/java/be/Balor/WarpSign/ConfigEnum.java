@@ -73,7 +73,7 @@ public enum ConfigEnum {
 			"Activate some block protection to avoid block placing near the Sign (WarpSign)"),
 	BLOCK_PERIMETER(
 			"blockPerim",
-			5,
+			2,
 			"Distance in block that represent the protected zone when using the block protection"),
 	BLOCK_PROTECT_MSG(
 			"blockMsg",
