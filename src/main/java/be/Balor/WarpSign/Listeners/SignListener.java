@@ -18,6 +18,9 @@ package be.Balor.WarpSign.Listeners;
 
 import static be.Balor.Tools.Utils.colorParser;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -35,6 +38,7 @@ import be.Balor.Manager.Permissions.PermissionManager;
 import be.Balor.Player.ACPlayer;
 import be.Balor.Tools.Warp;
 import be.Balor.WarpSign.ConfigEnum;
+import be.Balor.WarpSign.WarpSign;
 import be.Balor.WarpSign.Utils.WarpSignContainer;
 import be.Balor.World.ACWorld;
 
@@ -45,33 +49,59 @@ import be.Balor.World.ACWorld;
 public class SignListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onBlockBreak(BlockBreakEvent event) {
-		if (event.isCancelled())
+	public void onBlockBreak(final BlockBreakEvent event) {
+		if (event.isCancelled()) {
 			return;
-		if (!(event.getBlock().getState() instanceof Sign))
+		}
+		final Block block = event.getBlock();
+		if (!(block.getState() instanceof Sign)) {
 			return;
-		final Sign sign = (Sign) event.getBlock().getState();
-		if (sign.getLine(0).indexOf(ConfigEnum.KEYWORD.getString()) != 0)
+		}
+		final Sign sign = (Sign) block.getState();
+		if (sign.getLine(0).indexOf(ConfigEnum.KEYWORD.getString()) != 0) {
 			return;
-		if (!PermissionManager.hasPerm(event.getPlayer(), "admincmd.warpsign.edit"))
+		}
+		if (!PermissionManager.hasPerm(event.getPlayer(),
+				"admincmd.warpsign.edit")) {
 			event.setCancelled(true);
+			return;
+		}
+
+		try {
+			final PreparedStatement stmt = WarpSign
+					.getSqlLite()
+					.prepareStatement(
+							"DELETE FROM `signs` WHERE `signs`.`x` = ? AND `signs`.`y` = ? AND `signs`.`z` = ?");
+			stmt.setInt(1, block.getX());
+			stmt.setInt(2, block.getY());
+			stmt.setInt(3, block.getZ());
+			stmt.execute();
+		} catch (final SQLException e) {
+			WarpSign.logSqliteException(e);
+		}
 
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public WarpSignContainer onPlayerInteract(PlayerInteractEvent event) {
-		if (event.isCancelled())
+	public WarpSignContainer onPlayerInteract(final PlayerInteractEvent event) {
+		if (event.isCancelled()) {
 			return null;
-		if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+		}
+		if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			return null;
+		}
 		final Block block = event.getClickedBlock();
-		if (!(block.getState() instanceof Sign))
+		if (!(block.getState() instanceof Sign)) {
 			return null;
+		}
 		final Sign sign = (Sign) block.getState();
-		if (sign.getLine(0).indexOf(ConfigEnum.KEYWORD.getString()) != 0)
+		if (sign.getLine(0).indexOf(ConfigEnum.KEYWORD.getString()) != 0) {
 			return null;
-		if (!PermissionManager.hasPerm(event.getPlayer(), "admincmd.warpsign.use"))
+		}
+		if (!PermissionManager.hasPerm(event.getPlayer(),
+				"admincmd.warpsign.use")) {
 			return null;
+		}
 		ACWorld world;
 		final Player p = event.getPlayer();
 		try {
@@ -80,26 +110,30 @@ public class SignListener implements Listener {
 			p.sendMessage(ConfigEnum.WORLDNF.getString() + sign.getLine(1));
 			return null;
 		}
-		final Warp warpPoint = world.getWarp(ChatColor.stripColor(sign.getLine(2)));
+		final Warp warpPoint = world.getWarp(ChatColor.stripColor(sign
+				.getLine(2)));
 		if (warpPoint == null) {
 			p.sendMessage(ConfigEnum.WARPNF.getString() + sign.getLine(2));
 			return null;
 		}
 		ACPlayer.getPlayer(p).setLastLocation(p.getLocation());
 		p.teleport(warpPoint.loc);
-		p.sendMessage(colorParser(ConfigEnum.TP_MSG.getString()) + warpPoint.name);
+		p.sendMessage(colorParser(ConfigEnum.TP_MSG.getString())
+				+ warpPoint.name);
 		return new WarpSignContainer(warpPoint.name, world.getName(), sign);
 
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
-	public void onSignChange(SignChangeEvent event) {
-		if (event.isCancelled())
+	public void onSignChange(final SignChangeEvent event) {
+		if (event.isCancelled()) {
 			return;
+		}
 		final String line0 = event.getLine(0);
 		final Player p = event.getPlayer();
-		if (line0.indexOf(ConfigEnum.KEYWORD.getString()) != 0)
+		if (line0.indexOf(ConfigEnum.KEYWORD.getString()) != 0) {
 			return;
+		}
 		if (!PermissionManager.hasPerm(p, "admincmd.warpsign.edit")) {
 			event.setCancelled(true);
 			return;
@@ -124,9 +158,29 @@ public class SignListener implements Listener {
 		event.setLine(2, warpPoint.name);
 
 		if (ConfigEnum.COLOR.getBoolean()) {
-			event.setLine(1, colorParser(ConfigEnum.WORDC.getString()) + event.getLine(1));
-			event.setLine(2, colorParser(ConfigEnum.WARPC.getString()) + event.getLine(2));
+			event.setLine(
+					1,
+					colorParser(ConfigEnum.WORDC.getString())
+							+ event.getLine(1));
+			event.setLine(
+					2,
+					colorParser(ConfigEnum.WARPC.getString())
+							+ event.getLine(2));
 		}
-
+		try {
+			final PreparedStatement stmt = WarpSign
+					.getSqlLite()
+					.prepareStatement(
+							"INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`) VALUES (?, ?, ?, ?, ?)");
+			stmt.setString(1, acWorld.getName());
+			stmt.setString(2, warpPoint.name);
+			final Block block = event.getBlock();
+			stmt.setInt(3, block.getX());
+			stmt.setInt(4, block.getY());
+			stmt.setInt(5, block.getZ());
+			stmt.execute();
+		} catch (final SQLException e) {
+			WarpSign.logSqliteException(e);
+		}
 	}
 }
