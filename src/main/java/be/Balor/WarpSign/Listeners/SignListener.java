@@ -47,6 +47,20 @@ import be.Balor.World.ACWorld;
  * 
  */
 public class SignListener implements Listener {
+	private PreparedStatement deleteSignStmt;
+	/**
+	 * 
+	 */
+	public SignListener() {
+		try {
+			deleteSignStmt = WarpSign
+					.getSqlLite()
+					.prepareStatement(
+							"DELETE FROM `signs` WHERE `signs`.`x` = ? AND `signs`.`y` = ? AND `signs`.`z` = ?");
+		} catch (final SQLException e) {
+			WarpSign.logSqliteException(e);
+		}
+	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockBreak(final BlockBreakEvent event) {
@@ -68,14 +82,11 @@ public class SignListener implements Listener {
 		}
 
 		try {
-			final PreparedStatement stmt = WarpSign
-					.getSqlLite()
-					.prepareStatement(
-							"DELETE FROM `signs` WHERE `signs`.`x` = ? AND `signs`.`y` = ? AND `signs`.`z` = ?");
-			stmt.setInt(1, block.getX());
-			stmt.setInt(2, block.getY());
-			stmt.setInt(3, block.getZ());
-			stmt.execute();
+			deleteSignStmt.clearParameters();
+			deleteSignStmt.setInt(1, block.getX());
+			deleteSignStmt.setInt(2, block.getY());
+			deleteSignStmt.setInt(3, block.getZ());
+			deleteSignStmt.execute();
 		} catch (final SQLException e) {
 			WarpSign.logSqliteException(e);
 		}
