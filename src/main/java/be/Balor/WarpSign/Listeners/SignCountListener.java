@@ -20,7 +20,6 @@ import static be.Balor.Tools.Utils.colorParser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.bukkit.block.Block;
@@ -40,7 +39,6 @@ import be.Balor.bukkit.AdminCmd.ACPluginManager;
  * 
  */
 public class SignCountListener extends SignListener {
-	private PreparedStatement getCountStmt;
 	private PreparedStatement updateCountStmt;
 	/**
 	 * 
@@ -48,8 +46,6 @@ public class SignCountListener extends SignListener {
 	public SignCountListener() {
 		try {
 			final Connection sqlLite = WarpSign.getSqlLite();
-			getCountStmt = sqlLite
-					.prepareStatement("SELECT warpCount FROM `signs` WHERE `x`=? AND `y`= ? AND `z`=?;");
 			updateCountStmt = sqlLite
 					.prepareStatement("UPDATE `signs` SET `warpcount` = warpcount+1 WHERE `signs`.`x` =? AND `signs`.`y` =? AND `signs`.`z` =?;");
 
@@ -71,21 +67,8 @@ public class SignCountListener extends SignListener {
 		if (warp == null) {
 			return null;
 		}
-		int count = 1;
 		final Block block = warp.sign.getBlock();
 		try {
-			getCountStmt.clearParameters();
-			getCountStmt.setInt(1, block.getX());
-			getCountStmt.setInt(2, block.getY());
-			getCountStmt.setInt(3, block.getZ());
-			getCountStmt.execute();
-			final ResultSet result = getCountStmt.getResultSet();
-			if (!result.next()) {
-				WarpSign.insertSign(warp.worldName, warp.warpName, block);
-			} else {
-				count = result.getInt(1);
-			}
-			count++;
 			updateCountStmt.clearParameters();
 			updateCountStmt.setInt(1, block.getX());
 			updateCountStmt.setInt(2, block.getY());
@@ -96,7 +79,7 @@ public class SignCountListener extends SignListener {
 		}
 
 		warp.sign.setLine(3, colorParser(ConfigEnum.COUNT_MSG.getString())
-				+ count);
+				+ ++warp.count);
 		ACPluginManager.scheduleSyncTask(new Runnable() {
 
 			@Override

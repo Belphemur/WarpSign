@@ -156,7 +156,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			insertStmt = sqlLite
 					.prepareStatement("INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`) VALUES (?, ?, ?, ?, ?)");
 			getSignStmt = sqlLite
-					.prepareStatement("SELECT world,name FROM signs WHERE x=? AND y=? AND z=?");
+					.prepareStatement("SELECT world,name, warpcount FROM signs WHERE x=? AND y=? AND z=?");
 		} catch (final SQLException e) {
 			errorHandler(e);
 			return;
@@ -202,8 +202,10 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			if (!result.next()) {
 				return null;
 			}
-			return new WarpSignContainer(result.getString("name"),
-					result.getString("world"), sign);
+			final WarpSignContainer warpSignContainer = new WarpSignContainer(
+					result.getString("name"), result.getString("world"), sign);
+			warpSignContainer.count = result.getInt("warpCount");
+			return warpSignContainer;
 		} catch (final SQLException e) {
 			logSqliteException(e);
 		}

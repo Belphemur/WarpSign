@@ -26,6 +26,7 @@ public class WarpSignContainer {
 	public final String warpName;
 	public final String worldName;
 	public Sign sign;
+	public int count = 0;
 
 	/**
 	 * @param warpName
