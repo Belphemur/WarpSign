@@ -74,7 +74,11 @@ public enum ConfigEnum {
 	BLOCK_PERIMETER(
 			"blockPerim",
 			5,
-			"Distance in block that represent the protected zone when using the block protection");
+			"Distance in block that represent the protected zone when using the block protection"),
+	BLOCK_PROTECT_MSG(
+			"blockMsg",
+			"",
+			"Message displayed when somebody try to place a block in the block protection perimeter. If empty, nothing is displayed.");
 
 	private final String confVal;
 	private final Object defaultVal;

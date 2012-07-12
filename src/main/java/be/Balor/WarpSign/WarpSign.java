@@ -30,9 +30,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 
 import be.Balor.Manager.Permissions.PermParent;
 import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
+import be.Balor.WarpSign.Listeners.BlockPlaceListener;
 import be.Balor.WarpSign.Listeners.SignCountListener;
 import be.Balor.WarpSign.Listeners.SignListener;
 import be.Balor.WarpSign.Utils.WarpSignContainer;
@@ -115,12 +117,14 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		}
 		ConfigEnum.setConfig(conf);
 		initSqlLite();
+		final PluginManager pluginManager = getServer().getPluginManager();
 		if (ConfigEnum.COUNT.getBoolean()) {
-			getServer().getPluginManager().registerEvents(
-					new SignCountListener(), this);
+			pluginManager.registerEvents(new SignCountListener(), this);
 		} else {
-			getServer().getPluginManager().registerEvents(new SignListener(),
-					this);
+			pluginManager.registerEvents(new SignListener(), this);
+		}
+		if (ConfigEnum.BLOCK_PROTECTION.getBoolean()) {
+			pluginManager.registerEvents(new BlockPlaceListener(), this);
 		}
 		permissionLinker.registerAllPermParent();
 

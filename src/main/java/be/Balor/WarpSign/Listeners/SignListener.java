@@ -18,6 +18,7 @@ package be.Balor.WarpSign.Listeners;
 
 import static be.Balor.Tools.Utils.colorParser;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -53,15 +54,14 @@ public class SignListener implements Listener {
 	 */
 	public SignListener() {
 		try {
-			deleteSignStmt = WarpSign
-					.getSqlLite()
-					.prepareStatement(
-							"DELETE FROM `signs` WHERE `signs`.`x` = ? AND `signs`.`y` = ? AND `signs`.`z` = ?");
+			final Connection sqlLite = WarpSign.getSqlLite();
+			deleteSignStmt = sqlLite
+					.prepareStatement("DELETE FROM `signs` WHERE `signs`.`x` = ? AND `signs`.`y` = ? AND `signs`.`z` = ?");
+
 		} catch (final SQLException e) {
 			WarpSign.logSqliteException(e);
 		}
 	}
-
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockBreak(final BlockBreakEvent event) {
 		if (event.isCancelled()) {
