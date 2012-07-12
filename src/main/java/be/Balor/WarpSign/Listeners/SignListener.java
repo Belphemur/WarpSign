@@ -35,7 +35,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import be.Balor.Manager.Exceptions.WorldNotLoaded;
 import be.Balor.Manager.Permissions.PermissionManager;
-import be.Balor.Player.ACPlayer;
+import be.Balor.Tools.Utils;
 import be.Balor.Tools.Warp;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.WarpSign;
@@ -104,24 +104,40 @@ public class SignListener implements Listener {
 		}
 		ACWorld world;
 		final Player p = event.getPlayer();
-		try {
-			world = ACWorld.getWorld(ChatColor.stripColor(sign.getLine(1)));
-		} catch (final WorldNotLoaded e) {
-			p.sendMessage(ConfigEnum.WORLDNF.getString() + sign.getLine(1));
-			return null;
+		WarpSignContainer container = WarpSign.getSign(sign);
+		Warp warpPoint;
+		if (container == null) {
+			try {
+				world = ACWorld.getWorld(ChatColor.stripColor(sign.getLine(1)));
+			} catch (final WorldNotLoaded e) {
+				p.sendMessage(ConfigEnum.WORLDNF.getString() + sign.getLine(1));
+				return null;
+			}
+			warpPoint = world.getWarp(ChatColor.stripColor(sign.getLine(2)));
+			if (warpPoint == null) {
+				p.sendMessage(ConfigEnum.WARPNF.getString() + sign.getLine(2));
+				return null;
+			}
+			container = new WarpSignContainer(warpPoint.name, world.getName(),
+					sign);
+		} else {
+			container.sign = sign;
+			try {
+				world = ACWorld.getWorld(container.worldName);
+			} catch (final WorldNotLoaded e) {
+				p.sendMessage(ConfigEnum.WORLDNF.getString() + sign.getLine(1));
+				return null;
+			}
+			warpPoint = world.getWarp(container.warpName);
+			if (warpPoint == null) {
+				p.sendMessage(ConfigEnum.WARPNF.getString() + sign.getLine(2));
+				return null;
+			}
 		}
-		final Warp warpPoint = world.getWarp(ChatColor.stripColor(sign
-				.getLine(2)));
-		if (warpPoint == null) {
-			p.sendMessage(ConfigEnum.WARPNF.getString() + sign.getLine(2));
-			return null;
-		}
-		ACPlayer.getPlayer(p).setLastLocation(p.getLocation());
-		p.teleport(warpPoint.loc);
+		Utils.teleportWithChunkCheck(p, warpPoint.loc);
 		p.sendMessage(colorParser(ConfigEnum.TP_MSG.getString())
 				+ warpPoint.name);
-		return new WarpSignContainer(warpPoint.name, world.getName(), sign);
-
+		return container;
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)

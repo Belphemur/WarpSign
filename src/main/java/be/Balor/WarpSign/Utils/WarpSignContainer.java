@@ -25,14 +25,15 @@ import org.bukkit.block.Sign;
 public class WarpSignContainer {
 	public final String warpName;
 	public final String worldName;
-	public final Sign sign;
+	public Sign sign;
 
 	/**
 	 * @param warpName
 	 * @param worldName
 	 * @param sign
 	 */
-	public WarpSignContainer(String warpName, String worldName, Sign sign) {
+	public WarpSignContainer(final String warpName, final String worldName,
+			final Sign sign) {
 		super();
 		this.warpName = warpName;
 		this.worldName = worldName;

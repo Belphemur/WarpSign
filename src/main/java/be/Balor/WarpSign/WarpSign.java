@@ -21,18 +21,21 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
 import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
 import be.Balor.WarpSign.Listeners.SignCountListener;
 import be.Balor.WarpSign.Listeners.SignListener;
+import be.Balor.WarpSign.Utils.WarpSignContainer;
 import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 
 /**
@@ -42,7 +45,7 @@ import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 public class WarpSign extends AbstractAdminCmdPlugin {
 	private static Connection sqlLite;
 	public static WarpSign INSTANCE;
-	private static PreparedStatement insertStmt;
+	private static PreparedStatement insertStmt, getSignStmt;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -152,6 +155,8 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 					+ ") ");
 			insertStmt = sqlLite
 					.prepareStatement("INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`) VALUES (?, ?, ?, ?, ?)");
+			getSignStmt = sqlLite
+					.prepareStatement("SELECT world,name FROM signs WHERE x=? AND y=? AND z=?");
 		} catch (final SQLException e) {
 			errorHandler(e);
 			return;
@@ -182,7 +187,26 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			insertStmt.setInt(5, block.getZ());
 			insertStmt.execute();
 		} catch (final SQLException e) {
-			WarpSign.logSqliteException(e);
+			logSqliteException(e);
 		}
+	}
+	public static WarpSignContainer getSign(final Sign sign) {
+		final Block block = sign.getBlock();
+		try {
+			getSignStmt.clearParameters();
+			getSignStmt.setInt(1, block.getX());
+			getSignStmt.setInt(2, block.getY());
+			getSignStmt.setInt(3, block.getZ());
+			getSignStmt.execute();
+			final ResultSet result = getSignStmt.getResultSet();
+			if (!result.next()) {
+				return null;
+			}
+			return new WarpSignContainer(result.getString("name"),
+					result.getString("world"), sign);
+		} catch (final SQLException e) {
+			logSqliteException(e);
+		}
+		return null;
 	}
 }
