@@ -16,42 +16,47 @@
  ************************************************************************/
 package be.Balor.WarpSign.Listeners;
 
-import java.io.IOException;
-import java.util.logging.Level;
+import static be.Balor.Tools.Utils.colorParser;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.world.WorldSaveEvent;
 
-import be.Balor.Tools.Configuration.File.ExtendedConfiguration;
 import be.Balor.WarpSign.ConfigEnum;
+import be.Balor.WarpSign.WarpSign;
 import be.Balor.WarpSign.Utils.WarpSignContainer;
 import be.Balor.bukkit.AdminCmd.ACPluginManager;
-import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
-import static be.Balor.Tools.Utils.colorParser;
 
 /**
  * @author Balor (aka Antoine Aflalo)
  * 
  */
 public class SignCountListener extends SignListener {
-	private final ExtendedConfiguration counts;
-	private final AbstractAdminCmdPlugin plugin;
-
+	private PreparedStatement getCountStmt;
+	private PreparedStatement updateCountStmt;
 	/**
-	 * @param counts
-	 * @param plugin
+	 * 
 	 */
-	public SignCountListener(ExtendedConfiguration counts, AbstractAdminCmdPlugin plugin) {
-		super();
-		this.counts = counts;
-		this.plugin = plugin;
-	}
+	public SignCountListener() {
+		try {
+			final Connection sqlLite = WarpSign.getSqlLite();
+			getCountStmt = sqlLite
+					.prepareStatement("SELECT warpCount FROM `signs` WHERE `x`=? AND `y`= ? AND `z`=?;");
+			updateCountStmt = sqlLite
+					.prepareStatement("UPDATE `signs` SET `warpcount` = warpcount+1 WHERE `signs`.`x` =? AND `signs`.`y` =? AND `signs`.`z` =?;");
 
+		} catch (final SQLException e) {
+			WarpSign.logSqliteException(e);
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -61,13 +66,37 @@ public class SignCountListener extends SignListener {
 	 */
 	@Override
 	@EventHandler
-	public WarpSignContainer onPlayerInteract(PlayerInteractEvent event) {
+	public WarpSignContainer onPlayerInteract(final PlayerInteractEvent event) {
 		final WarpSignContainer warp = super.onPlayerInteract(event);
-		if (warp == null)
+		if (warp == null) {
 			return null;
-		int count = counts.getInt(warp.toString(), 0);
-		counts.set(warp.toString(), ++count);
-		warp.sign.setLine(3, colorParser(ConfigEnum.COUNT_MSG.getString()) + count);
+		}
+		int count = 1;
+		final Block block = warp.sign.getBlock();
+		try {
+			getCountStmt.clearParameters();
+			getCountStmt.setInt(1, block.getX());
+			getCountStmt.setInt(2, block.getY());
+			getCountStmt.setInt(3, block.getZ());
+			getCountStmt.execute();
+			final ResultSet result = getCountStmt.getResultSet();
+			if (!result.next()) {
+				WarpSign.insertSign(warp.worldName, warp.warpName, block);
+			} else {
+				count = result.getInt(1);
+			}
+			count++;
+			updateCountStmt.clearParameters();
+			updateCountStmt.setInt(1, block.getX());
+			updateCountStmt.setInt(2, block.getY());
+			updateCountStmt.setInt(3, block.getZ());
+			updateCountStmt.executeUpdate();
+		} catch (final SQLException e) {
+			WarpSign.logSqliteException(e);
+		}
+
+		warp.sign.setLine(3, colorParser(ConfigEnum.COUNT_MSG.getString())
+				+ count);
 		ACPluginManager.scheduleSyncTask(new Runnable() {
 
 			@Override
@@ -77,19 +106,6 @@ public class SignCountListener extends SignListener {
 		});
 		return warp;
 	}
-
-	@EventHandler
-	public void onSave(WorldSaveEvent event) {
-		saveCounts();
-	}
-
-	@EventHandler
-	public void onDisable(PluginDisableEvent event) {
-		if (!event.getPlugin().equals(plugin))
-			return;
-		saveCounts();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -99,7 +115,7 @@ public class SignCountListener extends SignListener {
 	 */
 	@Override
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
+	public void onBlockBreak(final BlockBreakEvent event) {
 		super.onBlockBreak(event);
 	}
 
@@ -112,15 +128,7 @@ public class SignCountListener extends SignListener {
 	 */
 	@Override
 	@EventHandler(priority = EventPriority.HIGH)
-	public void onSignChange(SignChangeEvent event) {
+	public void onSignChange(final SignChangeEvent event) {
 		super.onSignChange(event);
-	}
-
-	private void saveCounts() {
-		try {
-			counts.save();
-		} catch (IOException e) {
-			plugin.getLogger().log(Level.SEVERE, "Problem when saving the TP count", e);
-		}
 	}
 }

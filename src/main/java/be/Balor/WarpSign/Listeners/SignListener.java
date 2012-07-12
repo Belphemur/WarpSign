@@ -167,20 +167,6 @@ public class SignListener implements Listener {
 					colorParser(ConfigEnum.WARPC.getString())
 							+ event.getLine(2));
 		}
-		try {
-			final PreparedStatement stmt = WarpSign
-					.getSqlLite()
-					.prepareStatement(
-							"INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`) VALUES (?, ?, ?, ?, ?)");
-			stmt.setString(1, acWorld.getName());
-			stmt.setString(2, warpPoint.name);
-			final Block block = event.getBlock();
-			stmt.setInt(3, block.getX());
-			stmt.setInt(4, block.getY());
-			stmt.setInt(5, block.getZ());
-			stmt.execute();
-		} catch (final SQLException e) {
-			WarpSign.logSqliteException(e);
-		}
+		WarpSign.insertSign(acWorld.getName(), warpPoint.name, event.getBlock());
 	}
 }

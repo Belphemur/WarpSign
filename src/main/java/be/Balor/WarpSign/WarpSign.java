@@ -20,11 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import be.Balor.Manager.Permissions.PermParent;
@@ -40,6 +42,7 @@ import be.Balor.bukkit.AdminCmd.AbstractAdminCmdPlugin;
 public class WarpSign extends AbstractAdminCmdPlugin {
 	private static Connection sqlLite;
 	public static WarpSign INSTANCE;
+	private static PreparedStatement insertStmt;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -108,18 +111,15 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			getLogger().log(Level.SEVERE, "Configuration saving problem", e1);
 		}
 		ConfigEnum.setConfig(conf);
+		initSqlLite();
 		if (ConfigEnum.COUNT.getBoolean()) {
 			getServer().getPluginManager().registerEvents(
-					new SignCountListener(
-							ExtendedConfiguration.loadConfiguration(new File(
-									getDataFolder(), "counts.yml")), this),
-					this);
+					new SignCountListener(), this);
 		} else {
 			getServer().getPluginManager().registerEvents(new SignListener(),
 					this);
 		}
 		permissionLinker.registerAllPermParent();
-		initSqlLite();
 
 	}
 	private void initSqlLite() {
@@ -146,10 +146,12 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			stmt.execute("CREATE TABLE IF NOT EXISTS `signs` ("
 					+ "  `world` varchar(64) NOT NULL,"
 					+ "  `name` varchar(64) NOT NULL,"
-					+ "  `count` int(11) NOT NULL DEFAULT '0',"
+					+ "  `warpCount` int(11) NOT NULL DEFAULT '0',"
 					+ "  `x` int(11) NOT NULL," + "  `y` int(11) NOT NULL,"
 					+ "  `z` int(11) NOT NULL," + "  PRIMARY KEY (`x`,`y`,`z`)"
 					+ ") ");
+			insertStmt = sqlLite
+					.prepareStatement("INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`) VALUES (?, ?, ?, ?, ?)");
 		} catch (final SQLException e) {
 			errorHandler(e);
 			return;
@@ -168,5 +170,19 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	 */
 	public static Connection getSqlLite() {
 		return sqlLite;
+	}
+	public static void insertSign(final String world, final String warp,
+			final Block block) {
+		try {
+			insertStmt.clearParameters();
+			insertStmt.setString(1, world);
+			insertStmt.setString(2, warp);
+			insertStmt.setInt(3, block.getX());
+			insertStmt.setInt(4, block.getY());
+			insertStmt.setInt(5, block.getZ());
+			insertStmt.execute();
+		} catch (final SQLException e) {
+			WarpSign.logSqliteException(e);
+		}
 	}
 }
