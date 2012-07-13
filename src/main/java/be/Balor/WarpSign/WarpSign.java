@@ -138,7 +138,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			return;
 		}
 		try {
-			final File db = new File(getDataFolder(), "warpsign.db");
+			final File db = new File(getDataFolder(), "signs.db");
 			if (!db.exists()) {
 				db.createNewFile();
 			}
@@ -155,12 +155,13 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 					+ "  `name` varchar(64) NOT NULL,"
 					+ "  `warpCount` int(11) NOT NULL DEFAULT '0',"
 					+ "  `x` int(11) NOT NULL," + "  `y` int(11) NOT NULL,"
-					+ "  `z` int(11) NOT NULL," + "  PRIMARY KEY (`x`,`y`,`z`)"
-					+ ") ");
+					+ "  `z` int(11) NOT NULL,"
+					+ "  `worldloc` varchar(64) NOT NULL,"
+					+ "  PRIMARY KEY (`x`,`y`,`z`,`worldloc` )" + ") ");
 			insertStmt = sqlLite
-					.prepareStatement("INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`) VALUES (?, ?, ?, ?, ?)");
+					.prepareStatement("INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`, `worldloc`) VALUES (?, ?, ?, ?, ?, ?)");
 			getSignStmt = sqlLite
-					.prepareStatement("SELECT world,name, warpcount FROM signs WHERE x=? AND y=? AND z=?");
+					.prepareStatement("SELECT world,name, warpcount FROM signs WHERE x=? AND y=? AND z=? AND worldloc=?");
 		} catch (final SQLException e) {
 			errorHandler(e);
 			return;
@@ -189,6 +190,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			insertStmt.setInt(3, block.getX());
 			insertStmt.setInt(4, block.getY());
 			insertStmt.setInt(5, block.getZ());
+			insertStmt.setString(6, block.getWorld().getName());
 			insertStmt.execute();
 		} catch (final SQLException e) {
 			logSqliteException(e);
@@ -201,6 +203,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			getSignStmt.setInt(1, block.getX());
 			getSignStmt.setInt(2, block.getY());
 			getSignStmt.setInt(3, block.getZ());
+			getSignStmt.setString(4, block.getWorld().getName());
 			getSignStmt.execute();
 			final ResultSet result = getSignStmt.getResultSet();
 			if (!result.next()) {
