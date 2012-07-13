@@ -132,6 +132,7 @@ public class SignListener implements Listener {
 			}
 			container = new WarpSignContainer(warpPoint.name, world.getName(),
 					sign);
+			WarpSign.insertSign(world.getName(), warpPoint.name, block);
 		} else {
 			container.sign = sign;
 			try {
