@@ -56,7 +56,7 @@ public class SignListener implements Listener {
 		try {
 			final Connection sqlLite = WarpSign.getSqlLite();
 			deleteSignStmt = sqlLite
-					.prepareStatement("DELETE FROM `signs` WHERE `signs`.`x` = ? AND `signs`.`y` = ? AND `signs`.`z` = ?");
+					.prepareStatement("DELETE FROM `signs` WHERE `signs`.`x` = ? AND `signs`.`y` = ? AND `signs`.`z` = ? AND `signs`.`worldloc` = ?");
 
 		} catch (final SQLException e) {
 			WarpSign.logSqliteException(e);
@@ -86,6 +86,7 @@ public class SignListener implements Listener {
 			deleteSignStmt.setInt(1, block.getX());
 			deleteSignStmt.setInt(2, block.getY());
 			deleteSignStmt.setInt(3, block.getZ());
+			deleteSignStmt.setString(4, block.getWorld().getName());
 			deleteSignStmt.execute();
 		} catch (final SQLException e) {
 			WarpSign.logSqliteException(e);

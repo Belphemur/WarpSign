@@ -47,7 +47,7 @@ public class SignCountListener extends SignListener {
 		try {
 			final Connection sqlLite = WarpSign.getSqlLite();
 			updateCountStmt = sqlLite
-					.prepareStatement("UPDATE `signs` SET `warpcount` = warpcount+1 WHERE `signs`.`x` =? AND `signs`.`y` =? AND `signs`.`z` =?;");
+					.prepareStatement("UPDATE `signs` SET `warpcount` = warpcount+1 WHERE `signs`.`x` =? AND `signs`.`y` =? AND `signs`.`z` =? AND `signs`.`worldloc` = ?");
 
 		} catch (final SQLException e) {
 			WarpSign.logSqliteException(e);
@@ -73,6 +73,7 @@ public class SignCountListener extends SignListener {
 			updateCountStmt.setInt(1, block.getX());
 			updateCountStmt.setInt(2, block.getY());
 			updateCountStmt.setInt(3, block.getZ());
+			updateCountStmt.setString(4, block.getWorld().getName());
 			updateCountStmt.executeUpdate();
 		} catch (final SQLException e) {
 			WarpSign.logSqliteException(e);

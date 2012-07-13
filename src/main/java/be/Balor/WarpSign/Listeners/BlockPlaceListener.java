@@ -39,7 +39,10 @@ public class BlockPlaceListener implements Listener {
 			blockPlaceStmt = WarpSign
 					.getSqlLite()
 					.prepareStatement(
-							"SELECT name FROM `signs` WHERE (((x-?)*(x-?)) + ((y-?)*(y-?)) + ((z-?)*(z-?))) <= ?;");
+							"SELECT name FROM `signs` WHERE worldloc=? AND (((x-?)*(x-?)) + ((y-?)*(y-?)) + ((z-?)*(z-?))) <="
+									+ Math.pow(
+											ConfigEnum.BLOCK_PERIMETER.getInt(),
+											2));
 		} catch (final SQLException e) {
 			WarpSign.logSqliteException(e);
 		}
@@ -49,14 +52,13 @@ public class BlockPlaceListener implements Listener {
 		final Block block = event.getBlock();
 		try {
 			blockPlaceStmt.clearParameters();
-			blockPlaceStmt.setInt(1, block.getX());
+			blockPlaceStmt.setString(1, block.getWorld().getName());
 			blockPlaceStmt.setInt(2, block.getX());
-			blockPlaceStmt.setInt(3, block.getY());
+			blockPlaceStmt.setInt(3, block.getX());
 			blockPlaceStmt.setInt(4, block.getY());
-			blockPlaceStmt.setInt(5, block.getZ());
+			blockPlaceStmt.setInt(5, block.getY());
 			blockPlaceStmt.setInt(6, block.getZ());
-			blockPlaceStmt.setInt(7,
-					(int) Math.pow(ConfigEnum.BLOCK_PERIMETER.getInt(), 2));
+			blockPlaceStmt.setInt(7, block.getZ());
 			blockPlaceStmt.execute();
 			if (blockPlaceStmt.getResultSet().next()) {
 				final String msg = ConfigEnum.BLOCK_PROTECT_MSG.getString();
