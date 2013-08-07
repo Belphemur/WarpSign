@@ -16,8 +16,6 @@
  ************************************************************************/
 package be.Balor.WarpSign.Listeners;
 
-import static be.Balor.Tools.Utils.colorParser;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -36,12 +34,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import be.Balor.Manager.Exceptions.WorldNotLoaded;
 import be.Balor.Manager.Permissions.PermissionManager;
-import be.Balor.Tools.Utils;
 import be.Balor.Tools.Warp;
+import be.Balor.Tools.CommandUtils.Materials;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.WarpSign;
 import be.Balor.WarpSign.Utils.WarpSignContainer;
 import be.Balor.World.ACWorld;
+import be.Balor.Manager.Commands.Tp.TeleportCommand; 
 
 /**
  * @author Balor (aka Antoine Aflalo)
@@ -149,8 +148,8 @@ public class SignListener implements Listener {
 				return null;
 			}
 		}
-		Utils.teleportWithChunkCheck(p, warpPoint.loc);
-		p.sendMessage(colorParser(ConfigEnum.TP_MSG.getString())
+		TeleportCommand.teleportWithChunkCheck(p, warpPoint.loc);
+		p.sendMessage(Materials.colorParser(ConfigEnum.TP_MSG.getString())
 				+ warpPoint.name);
 		return container;
 	}
@@ -191,11 +190,11 @@ public class SignListener implements Listener {
 		if (ConfigEnum.COLOR.getBoolean()) {
 			event.setLine(
 					1,
-					colorParser(ConfigEnum.WORDC.getString())
+					Materials.colorParser(ConfigEnum.WORDC.getString())
 							+ event.getLine(1));
 			event.setLine(
 					2,
-					colorParser(ConfigEnum.WARPC.getString())
+					Materials.colorParser(ConfigEnum.WARPC.getString())
 							+ event.getLine(2));
 		}
 		WarpSign.insertSign(acWorld.getName(), warpPoint.name, event.getBlock());
