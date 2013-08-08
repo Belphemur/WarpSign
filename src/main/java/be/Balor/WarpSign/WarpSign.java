@@ -48,6 +48,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	private static Connection sqlLite;
 	public static WarpSign INSTANCE;
 	private static PreparedStatement insertStmt, getSignStmt;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -59,7 +60,8 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		if (sqlLite != null) {
 			try {
 				sqlLite.close();
-			} catch (final SQLException e) {}
+			} catch (final SQLException e) {
+			}
 		}
 	}
 
@@ -81,10 +83,11 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 	 */
 	@Override
 	protected void registerPermParents() {
-		permissionLinker.addPermParent("admincmd.warpsign.*");
+		final PermParent parent = new PermParent("admincmd.warpsign.*");
+		parent.addChild("admincmd.warpsign.edit");
+		parent.addChild("admincmd.warpsign.use");
+		permissionLinker.addPermParent(parent);
 		permissionLinker.setMajorPerm(new PermParent("admincmd.*"));
-		permissionLinker.addPermChild("admincmd.warpsign.edit");
-		permissionLinker.addPermChild("admincmd.warpsign.use");
 	}
 
 	/*
@@ -102,11 +105,9 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		super.onEnable();
 		INSTANCE = this;
 		final PluginDescriptionFile pdfFile = this.getDescription();
-		getLogger().info(
-				"Plugin Enabled. (version " + pdfFile.getVersion() + ")");
+		getLogger().info("Plugin Enabled. (version " + pdfFile.getVersion() + ")");
 		ConfigEnum.setPluginInfos(pdfFile);
-		final ExtendedConfiguration conf = ExtendedConfiguration
-				.loadConfiguration(new File(getDataFolder(), "config.yml"));
+		final ExtendedConfiguration conf = ExtendedConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
 		conf.addDefaults(ConfigEnum.getDefaultvalues());
 		conf.options().header(ConfigEnum.getHeader());
 		conf.options().copyDefaults(true);
@@ -129,6 +130,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 		permissionLinker.registerAllPermParent();
 
 	}
+
 	private void initSqlLite() {
 
 		try {
@@ -142,47 +144,42 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			if (!db.exists()) {
 				db.createNewFile();
 			}
-			sqlLite = DriverManager.getConnection("jdbc:sqlite:"
-					+ db.getAbsolutePath());
+			sqlLite = DriverManager.getConnection("jdbc:sqlite:" + db.getAbsolutePath());
 		} catch (final Exception e) {
 			errorHandler(e);
 			return;
 		}
 		try {
 			final Statement stmt = sqlLite.createStatement();
-			stmt.execute("CREATE TABLE IF NOT EXISTS `signs` ("
-					+ "  `world` varchar(64) NOT NULL,"
-					+ "  `name` varchar(64) NOT NULL,"
-					+ "  `warpCount` int(11) NOT NULL DEFAULT '0',"
-					+ "  `x` int(11) NOT NULL," + "  `y` int(11) NOT NULL,"
-					+ "  `z` int(11) NOT NULL,"
-					+ "  `worldloc` varchar(64) NOT NULL,"
-					+ "  PRIMARY KEY (`x`,`y`,`z`,`worldloc` )" + ") ");
-			insertStmt = sqlLite
-					.prepareStatement("INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`, `worldloc`) VALUES (?, ?, ?, ?, ?, ?)");
-			getSignStmt = sqlLite
-					.prepareStatement("SELECT world,name, warpcount FROM signs WHERE x=? AND y=? AND z=? AND worldloc=?");
+			stmt.execute("CREATE TABLE IF NOT EXISTS `signs` (" + "  `world` varchar(64) NOT NULL," + "  `name` varchar(64) NOT NULL,"
+					+ "  `warpCount` int(11) NOT NULL DEFAULT '0'," + "  `x` int(11) NOT NULL," + "  `y` int(11) NOT NULL," + "  `z` int(11) NOT NULL,"
+					+ "  `worldloc` varchar(64) NOT NULL," + "  PRIMARY KEY (`x`,`y`,`z`,`worldloc` )" + ") ");
+			insertStmt = sqlLite.prepareStatement("INSERT OR IGNORE INTO `signs` (`world`, `name`, `x`, `y`, `z`, `worldloc`) VALUES (?, ?, ?, ?, ?, ?)");
+			getSignStmt = sqlLite.prepareStatement("SELECT world,name, warpcount FROM signs WHERE x=? AND y=? AND z=? AND worldloc=?");
 		} catch (final SQLException e) {
 			errorHandler(e);
 			return;
 		}
 
 	}
+
 	private void errorHandler(final Exception e) {
 		getLogger().log(Level.SEVERE, "SQLite Error", e);
 		Bukkit.getPluginManager().disablePlugin(this);
 	}
+
 	public static void logSqliteException(final SQLException e) {
 		INSTANCE.getLogger().log(Level.WARNING, "SQLite Error", e);
 	}
+
 	/**
 	 * @return the sqlLite
 	 */
 	public static Connection getSqlLite() {
 		return sqlLite;
 	}
-	public static void insertSign(final String world, final String warp,
-			final Block block) {
+
+	public static void insertSign(final String world, final String warp, final Block block) {
 		try {
 			insertStmt.clearParameters();
 			insertStmt.setString(1, world);
@@ -196,6 +193,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			logSqliteException(e);
 		}
 	}
+
 	public static WarpSignContainer getSign(final Sign sign) {
 		final Block block = sign.getBlock();
 		try {
@@ -209,8 +207,7 @@ public class WarpSign extends AbstractAdminCmdPlugin {
 			if (!result.next()) {
 				return null;
 			}
-			final WarpSignContainer warpSignContainer = new WarpSignContainer(
-					result.getString("name"), result.getString("world"), sign);
+			final WarpSignContainer warpSignContainer = new WarpSignContainer(result.getString("name"), result.getString("world"), sign);
 			warpSignContainer.count = result.getInt("warpCount");
 			return warpSignContainer;
 		} catch (final SQLException e) {
