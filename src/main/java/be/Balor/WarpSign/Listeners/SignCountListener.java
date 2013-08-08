@@ -16,8 +16,6 @@
  ************************************************************************/
 package be.Balor.WarpSign.Listeners;
 
-import static be.Balor.Tools.Utils.colorParser;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,6 +27,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import be.Balor.Tools.CommandUtils.Materials;
 import be.Balor.WarpSign.ConfigEnum;
 import be.Balor.WarpSign.WarpSign;
 import be.Balor.WarpSign.Utils.WarpSignContainer;
@@ -79,7 +78,7 @@ public class SignCountListener extends SignListener {
 			WarpSign.logSqliteException(e);
 		}
 
-		warp.sign.setLine(3, colorParser(ConfigEnum.COUNT_MSG.getString())
+		warp.sign.setLine(3, Materials.colorParser(ConfigEnum.COUNT_MSG.getString())
 				+ ++warp.count);
 		ACPluginManager.scheduleSyncTask(new Runnable() {
 
